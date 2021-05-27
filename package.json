@@ -1,0 +1,8 @@
+{
+  "name": "credits_code_test",
+  "version": "1.0.0",
+  "description": "Code Test for Luxury Escapes Candidates",
+  "main": "index.js",
+  "author": "Joshua Paling <joshua.paling@luxuryescapes.com> (http://luxuryescapes.com/)",
+  "license": "UNLICENSED"
+}
