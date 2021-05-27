@@ -54,7 +54,26 @@ app.post('/credits/:user/spend', (req, res) => {
     })
   }
 
+  const transactions = credits.findByUser(user)
+  const expiryTimestamps = transactions.filter(t => t.expires_at)
+                               .map(t => new Date(t.expires_at).getTime())
+
+  const maxExpiry = Math.max(expiryTimestamps)
   const now = new Date()
+  if (maxExpiry < now.getTime()) {
+    // expire the credit by spending the unused balance on nothing
+    credits.create({
+      created_at: now.toISOString(),
+      expires_at: null,
+      user: user,
+      amount: balance * -1,
+      order_id: null,
+    })
+    return res.status(403).send({
+      error: 'balance expired',
+      balance: credits.balance(user),
+    })
+  }
 
   credits.create({
     created_at: now.toISOString(),

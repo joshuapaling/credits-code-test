@@ -75,4 +75,21 @@ describe("/credits/:user/spend", () => {
     expect(response2.statusCode).toBe(201);
     expect(response2.body.balance).toEqual(0)
   });
+
+  test("blocks spend and expires credit if past expiry", async () => {
+    credits.create({
+      created_at: '2018-01-01T00:00:00.000Z',
+      expires_at: '2020-01-02T00:00:00.000Z',
+      user: 'fred',
+      amount: 10
+    });
+
+    const response1 = await request(app).post("/credits/fred/spend").send({
+      amount: 5,
+      orderId: 'a1',
+    })
+    expect(response1.statusCode).toBe(403);
+    expect(response1.body.balance).toEqual(0)
+    expect(response1.body.error).toEqual('balance expired')
+  });
 });
